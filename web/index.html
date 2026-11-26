@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="id"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OpenWrt 25.12 Builder v2</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#121c2e;--line:#26364e;--muted:#93a4bd;--accent:#43d9a3;--blue:#6ea8fe}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#edf3fb;font:15px/1.5 system-ui,Segoe UI,sans-serif}
+header{padding:24px max(20px,calc((100vw - 1120px)/2));background:#101b2c;border-bottom:1px solid var(--line)}
+h1{font-size:24px;margin:0}header p{color:var(--muted);margin:6px 0 0}.wrap{max-width:1120px;margin:24px auto;padding:0 18px;display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+h2{font-size:17px;margin:0 0 14px}h3{font-size:14px;margin:18px 0 8px;color:var(--blue)}
+label{display:block;color:var(--muted);font-size:13px;margin:10px 0 5px}
+input,select{background:#0b1423;color:#fff;border:1px solid var(--line);border-radius:8px;padding:10px;width:100%}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.checks{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.check{display:flex;gap:8px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:8px;color:#dce7f5;font-size:13px}
+.check input{width:auto}.pkg{display:flex;justify-content:space-between;gap:10px}.pkg small{color:var(--muted);display:block}
+button{border:0;border-radius:9px;padding:12px 16px;background:var(--accent);color:#062016;font-weight:750;cursor:pointer}
+button.secondary{background:#263a56;color:#edf3fb}button:disabled{opacity:.5;cursor:not-allowed}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.bar{height:10px;background:#26364e;border-radius:99px;overflow:hidden}.bar>i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+pre{white-space:pre-wrap;word-break:break-word;background:#07101c;border:1px solid var(--line);border-radius:9px;padding:12px;min-height:170px;max-height:340px;overflow:auto;color:#c9d7e8;font-size:12px}
+.muted{color:var(--muted);font-size:12px}.status{font-weight:700}.files a{color:var(--accent);text-decoration:none}.file{border-top:1px solid var(--line);padding:10px 0}.pill{font-size:11px;border:1px solid var(--line);border-radius:20px;padding:3px 8px;color:var(--muted)}
+@media(max-width:800px){.wrap{grid-template-columns:1fr}.row{grid-template-columns:1fr}}
+</style></head><body>
+<header><h1>OpenWrt 25.12 Builder <span class="pill">x86_64 · v2.0</span></h1><p>Atur paket, filesystem, boot mode, jaringan, lalu jalankan build.</p></header>
+<div class="wrap"><main>
+<section class="panel"><h2>01 · Image & boot</h2>
+<div class="row"><div><label>Filesystem</label><select id="filesystem"><option value="squashfs">SquashFS</option><option value="ext4">EXT4</option></select></div>
+<div><label>Rootfs partition (MB)</label><input id="size" type="number" min="256" max="65536" value="1024"></div></div>
+<label>Boot mode (pilih minimal satu)</label><div class="checks">
+<label class="check"><input id="bios" type="checkbox" checked> BIOS / Legacy</label>
+<label class="check"><input id="uefi" type="checkbox" checked> UEFI</label></div>
+<h3>Network & first boot</h3>
+<div class="row"><div><label>Hostname</label><input id="hostname" value="OpenWrt"></div><div><label>LAN IP</label><input id="lan_ip" value="192.168.1.1"></div></div>
+<div class="row"><div><label>DNS</label><input id="dns" value="1.1.1.1"></div><div><label>DHCP start</label><input id="dhcp_start" type="number" value="100"></div></div>
+<label>DHCP limit</label><input id="dhcp_limit" type="number" value="150">
+</section>
+<section class="panel"><h2>02 · Paket firmware</h2><p class="muted">Paket diseleksi berdasarkan kategori. Pastikan driver NIC sesuai perangkat.</p>
+<div id="packages"></div>
+<h3>Integrasi pihak ketiga</h3><div class="checks">
+<label class="check"><input type="checkbox" id="adguardhome"> AdGuard Home</label>
+<label class="check"><input type="checkbox" id="passwall"> Passwall / Passwall2</label>
+<label class="check"><input type="checkbox" id="openclash"> OpenClash</label></div>
+<p class="muted">Integrasi pihak ketiga memakai feed eksternal. Build bisa gagal jika feed/package upstream berubah atau tidak kompatibel dengan branch yang dipilih.</p>
+</section>
+<div class="actions"><button id="save">Simpan konfigurasi</button><button id="build">▶ Build firmware</button><button class="secondary" id="downloadConfig">Download config JSON</button></div>
+</main>
+<aside>
+<section class="panel"><h2>03 · Build status</h2><div class="status" id="status">Idle</div><p class="muted" id="message">Simpan konfigurasi lalu jalankan build.</p><div class="bar"><i id="progress"></i></div><p class="muted" id="percent">0%</p><h3>Build log</h3><pre id="log">Belum ada log build.</pre></section>
+<section class="panel"><h2>04 · Firmware & SHA256</h2><p class="muted">Daftar file muncul setelah build berhasil.</p><div id="files" class="files">Belum ada file.</div><button class="secondary" id="refresh">Refresh file</button></section>
+<section class="panel"><h2>Kernel & modules</h2><p class="muted">Paket kmod di bawah ditambahkan sebagai module. Untuk mengubah opsi kernel tingkat rendah, jalankan <code>./build.sh menuconfig</code> dari terminal lalu simpan file .config ke repository.</p></section>
+</aside></div>
+<script>
+const $=id=>document.getElementById(id);
+let catalog={},selected=new Set();
+async function init(){
+ catalog=await (await fetch('/packages.json')).json();
+ for(const [category,items] of Object.entries(catalog)){
+  const wrap=document.createElement('div');wrap.innerHTML=`<h3>${category}</h3><div class="checks"></div>`;
+  const checks=wrap.querySelector('.checks');
+  items.forEach(([id,title,desc])=>{
+   const label=document.createElement('label');label.className='check pkg';
+   label.innerHTML=`<span><b>${title}</b><small>${desc}</small></span><input type="checkbox" data-pkg="${id}">`;
+   checks.appendChild(label);
+  });
+  $('packages').appendChild(wrap);
+ }
+ document.querySelectorAll('[data-pkg]').forEach(x=>x.addEventListener('change',()=>x.checked?selected.add(x.dataset.pkg):selected.delete(x.dataset.pkg)));
+ const saved=await fetch('/api/config').then(r=>r.json()).catch(()=>null);
+ if(saved) loadConfig(saved);
+ refreshFiles(); connectEvents();
+}
+function loadConfig(c){
+ $('filesystem').value=c.filesystem||'squashfs';$('size').value=c.rootfs_size_mb||1024;
+ $('bios').checked=!!c.boot?.bios;$('uefi').checked=!!c.boot?.uefi;
+ $('hostname').value=c.network?.hostname||'OpenWrt';$('lan_ip').value=c.network?.lan_ip||'192.168.1.1';
+ $('dns').value=c.network?.dns||'1.1.1.1';$('dhcp_start').value=c.network?.dhcp_start||100;$('dhcp_limit').value=c.network?.dhcp_limit||150;
+ selected=new Set([...(c.packages||[]),...(c.kernel_modules||[])]);
+ document.querySelectorAll('[data-pkg]').forEach(x=>x.checked=selected.has(x.dataset.pkg));
+ (c.integrations||[]).forEach(x=>{if($(x))$(x).checked=true});
+}
+function collect(){
+ const packages=[],kernel_modules=[];
+ document.querySelectorAll('[data-pkg]:checked').forEach(x=>{
+  const id=x.dataset.pkg;
+  if(id.startsWith('kmod-'))kernel_modules.push(id);else packages.push(id);
+ });
+ return {rootfs_size_mb:Number($('size').value),filesystem:$('filesystem').value,
+  boot:{bios:$('bios').checked,uefi:$('uefi').checked},
+  network:{hostname:$('hostname').value.trim(),lan_ip:$('lan_ip').value.trim(),dns:$('dns').value.trim(),dhcp_start:Number($('dhcp_start').value),dhcp_limit:Number($('dhcp_limit').value)},
+  packages,kernel_modules,
+  integrations:['adguardhome','passwall','openclash'].filter(x=>$(x).checked)};
+}
+async function save(){
+ const c=collect();const r=await fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(c)});
+ if(!r.ok)throw new Error(await r.text());return c;
+}
+$('save').onclick=async()=>{try{await save();$('message').textContent='Konfigurasi tersimpan.'}catch(e){alert(e.message)}};
+$('build').onclick=async()=>{try{await save();$('build').disabled=true;const r=await fetch('/api/build',{method:'POST'});if(!r.ok)throw new Error(await r.text());$('message').textContent='Build dimulai.'}catch(e){alert(e.message)}};
+$('downloadConfig').onclick=()=>{const blob=new Blob([JSON.stringify(collect(),null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='builder-config.json';a.click();URL.revokeObjectURL(a.href)};
+$('refresh').onclick=refreshFiles;
+async function refreshFiles(){
+ const list=await fetch('/api/files').then(r=>r.json()).catch(()=>[]);
+ $('files').innerHTML=list.length?list.map(f=>`<div class="file"><a href="${f.url}">${f.name}</a><div class="muted">${(f.size/1048576).toFixed(2)} MB</div><div class="muted">SHA256: <code>${f.sha256}</code></div></div>`).join(''):'Belum ada file output.';
+}
+function connectEvents(){
+ const es=new EventSource('/api/events');
+ es.onmessage=e=>{const m=JSON.parse(e.data);if(m.type==='log'){$('log').textContent+=m.data+'\\n';$('log').scrollTop=$('log').scrollHeight}
+ if(m.type==='state'){const s=m.data;$('status').textContent=s.status;$('message').textContent=s.message;$('progress').style.width=s.percent+'%';$('percent').textContent=s.percent+'%';$('build').disabled=!!s.running;if(s.status==='success'||s.status==='failed')refreshFiles();}};
+ es.onerror=()=>{es.close();setTimeout(connectEvents,2500)};
+}
+init();
+</script></body></html>

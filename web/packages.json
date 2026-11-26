@@ -1,0 +1,219 @@
+{
+  "Network": [
+    [
+      "curl",
+      "curl",
+      "HTTP client"
+    ],
+    [
+      "wget-ssl",
+      "wget-ssl",
+      "Download utility"
+    ],
+    [
+      "tcpdump",
+      "tcpdump",
+      "Packet capture"
+    ],
+    [
+      "ethtool",
+      "ethtool",
+      "Ethernet diagnostics"
+    ],
+    [
+      "iperf3",
+      "iperf3",
+      "Network throughput test"
+    ],
+    [
+      "bind-host",
+      "bind-host",
+      "DNS lookup"
+    ],
+    [
+      "mtr",
+      "mtr",
+      "Route diagnostics"
+    ],
+    [
+      "socat",
+      "socat",
+      "Socket relay"
+    ],
+    [
+      "mwan3",
+      "mwan3",
+      "Multi-WAN policy routing"
+    ]
+  ],
+  "VPN": [
+    [
+      "wireguard-tools",
+      "wireguard-tools",
+      "WireGuard utilities"
+    ],
+    [
+      "luci-proto-wireguard",
+      "luci-proto-wireguard",
+      "LuCI WireGuard protocol"
+    ],
+    [
+      "openvpn-openssl",
+      "openvpn-openssl",
+      "OpenVPN"
+    ],
+    [
+      "luci-app-openvpn",
+      "luci-app-openvpn",
+      "OpenVPN LuCI"
+    ],
+    [
+      "strongswan-full",
+      "strongswan-full",
+      "IPsec VPN"
+    ]
+  ],
+  "USB": [
+    [
+      "kmod-usb-core",
+      "kmod-usb-core",
+      "USB core"
+    ],
+    [
+      "kmod-usb2",
+      "kmod-usb2",
+      "USB 2.0"
+    ],
+    [
+      "kmod-usb3",
+      "kmod-usb3",
+      "USB 3.0"
+    ],
+    [
+      "usbutils",
+      "usbutils",
+      "lsusb utilities"
+    ],
+    [
+      "kmod-usb-storage",
+      "kmod-usb-storage",
+      "USB storage"
+    ],
+    [
+      "kmod-usb-storage-uas",
+      "kmod-usb-storage-uas",
+      "UAS storage"
+    ]
+  ],
+  "Storage": [
+    [
+      "block-mount",
+      "block-mount",
+      "Mount management"
+    ],
+    [
+      "kmod-fs-ext4",
+      "kmod-fs-ext4",
+      "EXT4 filesystem"
+    ],
+    [
+      "kmod-fs-vfat",
+      "kmod-fs-vfat",
+      "FAT filesystem"
+    ],
+    [
+      "kmod-fs-ntfs3",
+      "kmod-fs-ntfs3",
+      "NTFS3 filesystem"
+    ],
+    [
+      "e2fsprogs",
+      "e2fsprogs",
+      "EXT filesystem tools"
+    ],
+    [
+      "parted",
+      "parted",
+      "Partition editor"
+    ],
+    [
+      "fdisk",
+      "fdisk",
+      "Disk partition utility"
+    ]
+  ],
+  "Wi-Fi": [
+    [
+      "iw",
+      "iw",
+      "Wireless configuration utility"
+    ],
+    [
+      "iwinfo",
+      "iwinfo",
+      "Wireless information"
+    ],
+    [
+      "wpad-mbedtls",
+      "wpad-mbedtls",
+      "WPA supplicant/AP"
+    ],
+    [
+      "hostapd-utils",
+      "hostapd-utils",
+      "Hostapd utilities"
+    ],
+    [
+      "kmod-cfg80211",
+      "kmod-cfg80211",
+      "Wireless cfg80211"
+    ],
+    [
+      "kmod-mac80211",
+      "kmod-mac80211",
+      "mac80211 stack"
+    ]
+  ],
+  "Kernel Modules": [
+    [
+      "kmod-e1000e",
+      "kmod-e1000e",
+      "Intel PRO/1000 PCIe"
+    ],
+    [
+      "kmod-igb",
+      "kmod-igb",
+      "Intel I350/I210/I211"
+    ],
+    [
+      "kmod-ixgbe",
+      "kmod-ixgbe",
+      "Intel 10GbE"
+    ],
+    [
+      "kmod-i40e",
+      "kmod-i40e",
+      "Intel XL710 40GbE"
+    ],
+    [
+      "kmod-r8169",
+      "kmod-r8169",
+      "Realtek PCIe"
+    ],
+    [
+      "kmod-virtio-net",
+      "kmod-virtio-net",
+      "VirtIO network"
+    ],
+    [
+      "kmod-virtio-blk",
+      "kmod-virtio-blk",
+      "VirtIO block"
+    ],
+    [
+      "kmod-igc",
+      "kmod-igc",
+      "Intel I225/I226"
+    ]
+  ]
+}

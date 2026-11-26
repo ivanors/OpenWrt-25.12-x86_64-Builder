@@ -1,0 +1,35 @@
+{
+  "rootfs_size_mb": 1024,
+  "filesystem": "squashfs",
+  "boot": {
+    "bios": true,
+    "uefi": true
+  },
+  "network": {
+    "hostname": "OpenWrt",
+    "lan_ip": "192.168.1.1",
+    "dns": "1.1.1.1",
+    "dhcp_start": 100,
+    "dhcp_limit": 150
+  },
+  "packages": [
+    "luci",
+    "luci-ssl",
+    "curl",
+    "ca-bundle",
+    "htop",
+    "nano",
+    "tcpdump"
+  ],
+  "kernel_modules": [
+    "kmod-e1000e",
+    "kmod-igb",
+    "kmod-ixgbe",
+    "kmod-r8169",
+    "kmod-usb3",
+    "kmod-usb-storage",
+    "kmod-fs-ext4",
+    "kmod-fs-vfat"
+  ],
+  "integrations": []
+}
